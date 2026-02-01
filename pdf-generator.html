@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Free PDF Generator</title>
+</head>
+<body>
+
+<h2>Free PDF Generator (Test)</h2>
+
+<input id="title" placeholder="PDF Title" style="width:300px;"><br><br>
+
+<textarea id="text" placeholder="Write PDF content here"
+  rows="6" cols="50"></textarea><br><br>
+
+<button onclick="generatePDF()">Generate PDF</button>
+
+<p id="status"></p>
+
+<script>
+async function generatePDF() {
+  const status = document.getElementById("status");
+  status.innerText = "Waking free server… please wait ⏳";
+
+  try {
+    const response = await fetch(
+      "https://backend-fjqq.onrender.com/api/generate-pdf",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: document.getElementById("title").value,
+          text: document.getElementById("text").value
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Server not ready");
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "generated.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    status.innerText = "PDF Generated Successfully ✅";
+
+  } catch (err) {
+    status.innerText =
+      "Free server was sleeping 😴 Click again after 15–20 sec";
+  }
+}
+</script>
+
+</body>
+</html>
